@@ -1,0 +1,39 @@
+# Environment Variables (CRITICAL)
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+.pytest_cache/
+
+# Large Model Files (recommended to store separately)
+models_/
+app/models_/
+*.keras
+*.h5
+*.tflite
+*.onnx
+
+# Node.js
+node_modules/
+frontend/node_modules/
+.eslintcache
+
+# Production Builds
+frontend/dist/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+.gemini/
+.agent/
+.agents/
