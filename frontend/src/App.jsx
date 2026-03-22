@@ -159,7 +159,7 @@ function App() {
             <Sparkles size={32} className="text-primary" />
           </div>
           <div className="title-area">
-            <h1>Tanglish AI</h1>
+            <h1>Phonetic Transliteration Intelligence</h1>
             <Auth session={session} setSession={setSession} />
           </div>
         </motion.div>
@@ -174,7 +174,7 @@ function App() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Type your Tanglish text here... (e.g., 'Padam semma mass but story konjam lag')"
+              placeholder="Type your phonetic text here... (e.g., 'Padam semma mass but story konjam lag')"
               rows="4"
               className="glass-input"
             />

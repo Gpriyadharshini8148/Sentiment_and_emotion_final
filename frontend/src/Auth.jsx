@@ -60,7 +60,7 @@ export default function Auth({ session, setSession }) {
     >
       <div className="auth-header">
         <h2>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
-        <p>{isSignUp ? 'Join Tanglish AI today' : 'Sign in to your account'}</p>
+        <p>{isSignUp ? 'Join Phonetic Transliteration Intelligence today' : 'Sign in to your account'}</p>
       </div>
 
       <form onSubmit={handleAuth} className="auth-form">
