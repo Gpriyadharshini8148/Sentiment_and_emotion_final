@@ -79,8 +79,8 @@ function App() {
     setLoading(true)
 
     try {
-      // Direct call to Flask backend exposed by CORS
-      const response = await axios.post('http://127.0.0.1:5000/predict', {
+      // Calling the backend endpoint (relative path for production compatibility)
+      const response = await axios.post('/predict', {
         text: text
       })
 
