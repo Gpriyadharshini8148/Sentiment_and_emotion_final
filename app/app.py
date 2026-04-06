@@ -511,6 +511,7 @@ def predict():
             final_emo_conf = openai_result.get('emotion_confidence', 1.0)
             insight = generate_insight(final_sent_label, final_emo_label, final_sent_conf)
             safe_print(f"Predicted Sentiment: {final_sent_label}, Emotion: {final_emo_label}")
+            threading.Thread(target=save_prediction_to_s3, args=(text, final_sent_label, final_emo_label, round(final_sent_conf * 100, 2)), daemon=True).start()
             return jsonify({
                 'sentiment': final_sent_label,
                 'sentiment_confidence': round(final_sent_conf * 100, 2),
@@ -531,6 +532,7 @@ def predict():
             final_emo_conf = hf_result.get('emotion_confidence', 1.0)
             insight = generate_insight(final_sent_label, final_emo_label, final_sent_conf)
             safe_print(f"Predicted Sentiment: {final_sent_label}, Emotion: {final_emo_label}")
+            threading.Thread(target=save_prediction_to_s3, args=(text, final_sent_label, final_emo_label, round(final_sent_conf * 100, 2)), daemon=True).start()
             return jsonify({
                 'sentiment': final_sent_label,
                 'sentiment_confidence': round(final_sent_conf * 100, 2),
@@ -611,6 +613,7 @@ def predict():
     insight = generate_insight(final_sent_label, final_emo_label, final_sent_conf)
     
     safe_print(f"Predicted Sentiment: {final_sent_label}, Emotion: {final_emo_label}")
+    threading.Thread(target=save_prediction_to_s3, args=(text, final_sent_label, final_emo_label, round(final_sent_conf * 100, 2)), daemon=True).start()
 
     return jsonify({
         'sentiment': final_sent_label,
