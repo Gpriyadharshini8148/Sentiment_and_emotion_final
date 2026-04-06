@@ -340,7 +340,7 @@ def predict_with_openai(text):
         result['emotion_confidence'] = random.uniform(0.89, 0.98)
         return result
     except Exception as e:
-        safe_print(f"OpenAI Prediction Error: {e}")
+        # Suppress OpenAI error logs per user request
         return None
 
 def predict_with_gemini(text):
@@ -373,7 +373,7 @@ def predict_with_gemini(text):
         result['emotion_confidence'] = random.uniform(0.89, 0.98)
         return result
     except Exception as e:
-        safe_print(f"Gemini Prediction Error: {e}")
+        # Suppress Gemini error logs per user request
         return None
 
 def predict_with_huggingface(text):
@@ -419,7 +419,7 @@ def predict_with_huggingface(text):
         result['emotion_confidence'] = random.uniform(0.89, 0.98)
         return result
     except Exception as e:
-        safe_print(f"Hugging Face Prediction Error: {e}")
+        # Suppress Hugging Face error logs per user request
         return None
 
 @app.route('/predict', methods=['POST'])
@@ -431,7 +431,6 @@ def predict():
 
     # Try Gemini first (Free Tier priority)
     if os.getenv("GEMINI_API_KEY"):
-        safe_print(f"Processing prediction: '{text}'")
         gemini_result = predict_with_gemini(text)
         if gemini_result:
             final_sent_label = gemini_result.get('sentiment', 'unknown_state').strip()
@@ -603,8 +602,10 @@ def generate_insight(sentiment, emotion, confidence):
 def health():
     return "OK", 200
 
+# Load resources (models, tokenizers, etc.) only once when the module is imported
+load_resources()
+
 if __name__ == '__main__':
-    load_resources()
     if le_sentiment:
         safe_print(f"DEBUG: Sentiment Classes: {len(le_sentiment.classes_)} ({le_sentiment.classes_})")
     if le_emotion:

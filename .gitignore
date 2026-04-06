@@ -25,7 +25,8 @@ frontend/node_modules/
 .eslintcache
 
 # Production Builds
-frontend/dist/
+# Unignored for deployment
+# frontend/dist/
 
 # OS-specific
 .DS_Store
