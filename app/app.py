@@ -1,4 +1,8 @@
 import os
+import boto3
+from botocore.config import Config
+import json
+import uuid
 # Force legacy keras for compatibility
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
@@ -74,6 +78,47 @@ app = Flask(__name__,
             static_url_path='',
             template_folder=DIST_FOLDER)
 CORS(app) # Enable CORS for all routes (still useful for dev)
+
+# ---- Supabase S3 Storage Setup ----
+def get_s3_client():
+    try:
+        return boto3.client(
+            's3',
+            endpoint_url=os.getenv('S3_ENDPOINT'),
+            aws_access_key_id=os.getenv('S3_ACCESS_KEY'),
+            aws_secret_access_key=os.getenv('S3_SECRET_KEY'),
+            region_name=os.getenv('S3_REGION', 'ap-southeast-2'),
+            config=Config(signature_version='s3v4')
+        )
+    except Exception as e:
+        safe_print(f'S3 client error: {e}')
+        return None
+
+def save_prediction_to_s3(text, sentiment, emotion, confidence):
+    try:
+        s3 = get_s3_client()
+        if not s3:
+            return
+        bucket = os.getenv('S3_BUCKET_NAME', 'predictions')
+        record = {
+            'id': str(uuid.uuid4()),
+            'input_text': text,
+            'sentiment': sentiment,
+            'emotion': emotion,
+            'confidence': confidence,
+            'timestamp': __import__('datetime').datetime.utcnow().isoformat()
+        }
+        key = f"predictions/{record['id']}.json"
+        s3.put_object(
+            Bucket=bucket,
+            Key=key,
+            Body=json.dumps(record),
+            ContentType='application/json'
+        )
+        safe_print(f'Saved prediction to S3: {key}')
+    except Exception as e:
+        safe_print(f'S3 upload error: {e}')
+# ---- End S3 Setup ----
 # Constants
 # Constants
 MAX_LEN = 64
@@ -445,6 +490,7 @@ def predict():
             final_emo_conf = gemini_result.get('emotion_confidence', 1.0)
             insight = generate_insight(final_sent_label, final_emo_label, final_sent_conf)
             safe_print(f"Predicted Sentiment: {final_sent_label}, Emotion: {final_emo_label}")
+            threading.Thread(target=save_prediction_to_s3, args=(text, final_sent_label, final_emo_label, round(final_sent_conf * 100, 2)), daemon=True).start()
             return jsonify({
                 'sentiment': final_sent_label,
                 'sentiment_confidence': round(final_sent_conf * 100, 2),
