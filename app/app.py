@@ -602,8 +602,9 @@ def generate_insight(sentiment, emotion, confidence):
 def health():
     return "OK", 200
 
-# Load resources (models, tokenizers, etc.) only once when the module is imported
-load_resources()
+# Load resources (models, tokenizers, etc.) only when needed or for health check
+# Commented out for Render deployment (Out of Memory prevention)
+# load_resources()
 
 if __name__ == '__main__':
     if le_sentiment:
