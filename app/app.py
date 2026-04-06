@@ -67,10 +67,12 @@ def suppress_output():
         sys.stdout = _stdout
         sys.stderr = _stderr
 
-app = Flask(__name__, 
-            static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/dist/assets'),
-            template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/dist'),
-            static_url_path='/assets')
+DIST_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/dist')
+
+app = Flask(__name__,
+            static_folder=DIST_FOLDER,
+            static_url_path='',
+            template_folder=DIST_FOLDER)
 CORS(app) # Enable CORS for all routes (still useful for dev)
 # Constants
 # Constants
@@ -287,9 +289,13 @@ def train_worker():
         training_status = f"Training Failed: {str(e)}"
         safe_print(f"Error in training: {e}")
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    from flask import send_from_directory
+    if path != '' and os.path.exists(os.path.join(DIST_FOLDER, path)):
+        return send_from_directory(DIST_FOLDER, path)
+    return send_from_directory(DIST_FOLDER, 'index.html')
 
 @app.route('/train', methods=['POST'])
 def train():
